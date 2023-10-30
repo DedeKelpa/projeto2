@@ -8,7 +8,7 @@ Samuel David Baecker RA: 22.123.043-6
 
 Este programa é o sobre um banco, que contém 8 funções sendo elas:
 
-1 - Adicionar Cliente, 2 - Remover Clientes, 3 - Listar Clientes, 4 - Débito, 5 - Depósito, 6 - Extrato, 7  - Transferência entre contas e 8 - sair.
+1 - Adicionar Cliente, 2 - Remover Clientes, 3 - Listar Clientes, 4 - Débito, 5 - Depósito, 6 - Extrato, 7  - Transferência entre contas e 8 - Sair.
 
 1 - Adicionar Clientes: Função utilizada para adicionar um cliente ao banco.
 2 - Remover Clientes: Função utilizada para remover os clientes do banco.

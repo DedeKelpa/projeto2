@@ -20,3 +20,5 @@ Este programa é o sobre um banco, que contém 8 funções bancarias sendo elas:
 8 - Sair: Função utilizada para sair do banco.
 
 Obs: Ignorar as duas primeiras mensagens de erro ao iniciar o codigo. O codigo foi testado e feito no Replit e, as vezes, é necessario excluir os arquivos "clientesbanco.bin" e "extrato.txt" para fazer o codigo rodar novamente, caso ja tenha rodado uma primeira vez e salvo algo nesses arquivos.
+
+*** Aplicadas as correcoes da issue sobre as variaveis globais ***

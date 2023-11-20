@@ -3,12 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Cliente clientesbanco[100];
-struct Extrato lista_extrato[100];
-int numClientes = 0;
-int numExtratos = 0;
 
-void arquivo_clientes() {
+void arquivo_clientes(struct Cliente *clientes, int numClientes) {
   FILE *arquivo = fopen("clientesbanco.bin", "wb");
   if (arquivo == NULL) {
     perror("Erro ao abrir o arquivo");
@@ -16,15 +12,15 @@ void arquivo_clientes() {
   }
 
   for (int i = 0; i < numClientes; i++) {
-    fprintf(arquivo, "%s,%s,%d,%.2lf,%s\n", clientesbanco[i].nome,
-            clientesbanco[i].cpf, clientesbanco[i].tipo, clientesbanco[i].saldo,
-            clientesbanco[i].senha);
+    fprintf(arquivo, "%s,%s,%d,%.2lf,%s\n", clientes[i].nome,
+            clientes[i].cpf, clientes[i].tipo, clientes[i].saldo,
+            clientes[i].senha);
   }
 
   fclose(arquivo);
 }
 
-void arquivo_extrato() {
+void arquivo_extrato(struct Extrato *extratos, int numExtratos) {
   FILE *arquivo = fopen("extrato.txt", "w");
   if (arquivo == NULL) {
     perror("Erro ao abrir o arquivo");
@@ -32,15 +28,16 @@ void arquivo_extrato() {
   }
 
   for (int i = 0; i < numExtratos; i++) {
-    fprintf(arquivo, "%s,%s,%.2lf,%.2lf,%.2lf\n", lista_extrato[i].cpf,
-            lista_extrato[i].data, lista_extrato[i].valor,
-            lista_extrato[i].tarifa, lista_extrato[i].saldo);
+    fprintf(arquivo, "%s,%s,%.2lf,%.2lf,%.2lf\n", extratos[i].cpf,
+            extratos[i].data, extratos[i].valor,
+            extratos[i].tarifa, extratos[i].saldo);
   }
 
   fclose(arquivo);
 }
 
-void ler_arquivo_clientes() {
+
+void ler_arquivo_clientes(struct Cliente *clientes, int *numClientes) {
   FILE *arquivo = fopen("clientesbanco.bin", "rb");
   if (arquivo == NULL) {
     perror("Erro ao abrir o arquivo");
@@ -48,17 +45,18 @@ void ler_arquivo_clientes() {
   }
 
   while (fscanf(arquivo, "%[^,],%[^,],%d,%lf,%s\n",
-                clientesbanco[numClientes].nome, clientesbanco[numClientes].cpf,
-                &clientesbanco[numClientes].tipo,
-                &clientesbanco[numClientes].saldo,
-                clientesbanco[numClientes].senha) != EOF) {
-    numClientes++;
+                clientes[*numClientes].nome, clientes[*numClientes].cpf,
+                &clientes[*numClientes].tipo,
+                &clientes[*numClientes].saldo,
+                clientes[*numClientes].senha) != EOF) {
+    (*numClientes)++;
   }
 
   fclose(arquivo);
 }
 
-void ler_arquivo_extrato() {
+
+void ler_arquivo_extrato(struct Extrato *extratos, int *numExtratos) {
   FILE *arquivo = fopen("extrato.txt", "r");
   if (arquivo == NULL) {
     perror("Erro ao abrir o arquivo");
@@ -66,35 +64,39 @@ void ler_arquivo_extrato() {
   }
 
   while (fscanf(arquivo, "%[^,],%[^,],%lf,%lf,%lf\n",
-                lista_extrato[numExtratos].cpf, lista_extrato[numExtratos].data,
-                &lista_extrato[numExtratos].valor,
-                &lista_extrato[numExtratos].tarifa,
-                &lista_extrato[numExtratos].saldo) != EOF) {
-    numExtratos++;
+                extratos[*numExtratos].cpf, extratos[*numExtratos].data,
+                &extratos[*numExtratos].valor,
+                &extratos[*numExtratos].tarifa,
+                &extratos[*numExtratos].saldo) != EOF) {
+    (*numExtratos)++;
   }
 
   fclose(arquivo);
 }
 
-struct Cliente *buscar_cliente(const char *cpf) {
+
+struct Cliente *buscar_cliente(const char *cpf, struct Cliente *clientes, int numClientes) {
   for (int i = 0; i < numClientes; i++) {
-    if (strcmp(cpf, clientesbanco[i].cpf) == 0) {
-      return &clientesbanco[i];
+    if (strcmp(cpf, clientes[i].cpf) == 0) {
+      return &clientes[i];
     }
   }
   return NULL;
 }
 
-struct Cliente *buscar_senha(const char *senha) {
+
+struct Cliente *buscar_senha(const char *senha, struct Cliente *clientes, int numClientes) {
   for (int i = 0; i < numClientes; i++) {
-    if (strcmp(senha, clientesbanco[i].cpf) == 0) {
-      return &clientesbanco[i];
+    if (strcmp(senha, clientes[i].senha) == 0) {
+      return &clientes[i];
     }
   }
   return NULL;
 }
 
-void novo_cliente() {
+
+
+void novo_cliente(struct Cliente *clientes, int *numClientes, struct Extrato *extratos, int *numExtratos) {
   struct Cliente cliente;
   printf("Digite os dados para criar sua conta:\n");
   printf("Digite seu nome: ");
@@ -108,24 +110,27 @@ void novo_cliente() {
   printf("Digite a senha do usuário: ");
   scanf("%s", cliente.senha);
 
-  strcpy(lista_extrato[numExtratos].cpf, cliente.cpf);
+  strcpy(extratos[*numExtratos].cpf, cliente.cpf);
   time_t now = time(NULL);
   struct tm *tm_info = localtime(&now);
-  strftime(lista_extrato[numExtratos].data, 20, "%d/%m/%Y %H:%M:%S", tm_info);
-  lista_extrato[numExtratos].valor = cliente.saldo;
-  lista_extrato[numExtratos].tarifa = 0.0;
-  lista_extrato[numExtratos].saldo = cliente.saldo;
-  numExtratos++;
+  strftime(extratos[*numExtratos].data, 20, "%d/%m/%Y %H:%M:%S", tm_info);
+  extratos[*numExtratos].valor = cliente.saldo;
+  extratos[*numExtratos].tarifa = 0.0;
+  extratos[*numExtratos].saldo = cliente.saldo;
+  (*numExtratos)++;
 
-  clientesbanco[numClientes] = cliente;
-  numClientes++;
+  clientes[*numClientes] = cliente;
+  (*numClientes)++;
 
-  arquivo_clientes();
-  arquivo_extrato();
+  arquivo_clientes(clientes, *numClientes);
+  arquivo_extrato(extratos, *numExtratos);
   printf("Cliente cadastrado com sucesso.\n");
 }
 
-void apagar_cliente() {
+
+
+
+void apagar_cliente(struct Cliente *clientes, int *numClientes) {
   char cpf[12];
   char senha[20];
   printf("Digite seu CPF: ");
@@ -133,14 +138,14 @@ void apagar_cliente() {
   printf("Digite sua senha: ");
   scanf("%s", senha);
 
-  for (int i = 0; i < numClientes; i++) {
-    if (strcmp(cpf, clientesbanco[i].cpf) == 0 &&
-        strcmp(senha, clientesbanco[i].senha) == 0) {
-      for (int j = i; j < numClientes - 1; j++) {
-        clientesbanco[j] = clientesbanco[j + 1];
+  for (int i = 0; i < *numClientes; i++) {
+    if (strcmp(cpf, clientes[i].cpf) == 0 &&
+        strcmp(senha, clientes[i].senha) == 0) {
+      for (int j = i; j < *numClientes - 1; j++) {
+        clientes[j] = clientes[j + 1];
       }
-      numClientes--;
-      arquivo_clientes();
+      (*numClientes)--;
+      arquivo_clientes(clientes, *numClientes);
       printf("\nCliente apagado\n\n");
       return;
     }
@@ -148,15 +153,48 @@ void apagar_cliente() {
   printf("CPF ou senha incorretos\n");
 }
 
-void listar_clientes() {
+void listar_clientes(struct Cliente *clientes, int numClientes) {
   for (int i = 0; i < numClientes; i++) {
-    printf("\n%s | %s | %d | %.2lf | %s\n", clientesbanco[i].nome,
-           clientesbanco[i].cpf, clientesbanco[i].tipo, clientesbanco[i].saldo,
-           clientesbanco[i].senha);
+    printf("\n%s | %s | %d | %.2lf | %s\n", clientes[i].nome,
+           clientes[i].cpf, clientes[i].tipo, clientes[i].saldo,
+           clientes[i].senha);
   }
 }
 
-void debito() {
+
+void deposito(struct Cliente *clientes, int numClientes, struct Extrato *extratos, int *numExtratos) {
+  char cpf[12];
+  double valor;
+  printf("Digite seu CPF: ");
+  scanf("%s", cpf);
+  printf("Digite o valor que será depositado: ");
+  scanf("%lf", &valor);
+
+  struct Cliente *cliente = buscar_cliente(cpf, clientes, numClientes);
+  if (cliente == NULL) {
+    printf("Cliente não encontrado\n");
+    return;
+  }
+
+  cliente->saldo += valor;
+
+  strcpy(extratos[*numExtratos].cpf, cpf);
+  time_t now = time(NULL);
+  struct tm *tm_info = localtime(&now);
+  strftime(extratos[*numExtratos].data, 20, "%d/%m/%Y %H:%M:%S", tm_info);
+  extratos[*numExtratos].valor = valor;
+  extratos[*numExtratos].tarifa = 0.0;
+  extratos[*numExtratos].saldo = cliente->saldo;
+  (*numExtratos)++;
+
+  arquivo_clientes(clientes, numClientes);
+  arquivo_extrato(extratos, *numExtratos);
+  printf("O valor foi depositado com sucesso\n");
+}
+
+
+
+void debito(struct Cliente *clientes, int numClientes, struct Extrato *extratos, int *numExtratos) {
   char cpf[12];
   char senha[20];
   double valor;
@@ -167,7 +205,7 @@ void debito() {
   printf("Digite o valor que será debitado: ");
   scanf("%lf", &valor);
 
-  struct Cliente *cliente = buscar_cliente(cpf);
+  struct Cliente *cliente = buscar_cliente(cpf, clientes, numClientes);
   if (cliente == NULL) {
     printf("Cliente não encontrado\n");
     return;
@@ -182,52 +220,23 @@ void debito() {
     return;
   }
 
-  strcpy(lista_extrato[numExtratos].cpf, cpf);
+  strcpy(extratos[*numExtratos].cpf, cpf);
   time_t now = time(NULL);
   struct tm *tm_info = localtime(&now);
-  strftime(lista_extrato[numExtratos].data, 20, "%d/%m/%Y %H:%M:%S", tm_info);
-  lista_extrato[numExtratos].valor = -valor;
-  lista_extrato[numExtratos].tarifa =
-      cliente->tipo == 2 ? 0.05 * valor : 0.03 * valor;
-  lista_extrato[numExtratos].saldo = cliente->saldo;
-  numExtratos++;
+  strftime(extratos[*numExtratos].data, 20, "%d/%m/%Y %H:%M:%S", tm_info);
+  extratos[*numExtratos].valor = -valor;
+  extratos[*numExtratos].tarifa = cliente->tipo == 2 ? 0.05 * valor : 0.03 * valor;
+  extratos[*numExtratos].saldo = cliente->saldo;
+  (*numExtratos)++;
 
-  arquivo_clientes();
-  arquivo_extrato();
+  arquivo_clientes(clientes, numClientes);
+  arquivo_extrato(extratos, *numExtratos);
   printf("Ação bem sucedida\n");
 }
 
-void deposito() {
-  char cpf[12];
-  double valor;
-  printf("Digite seu CPF: ");
-  scanf("%s", cpf);
-  printf("Digite o valor que será depositado: ");
-  scanf("%lf", &valor);
 
-  struct Cliente *cliente = buscar_cliente(cpf);
-  if (cliente == NULL) {
-    printf("Cliente não encontrado\n");
-    return;
-  }
 
-  cliente->saldo += valor;
-
-  strcpy(lista_extrato[numExtratos].cpf, cpf);
-  time_t now = time(NULL);
-  struct tm *tm_info = localtime(&now);
-  strftime(lista_extrato[numExtratos].data, 20, "%d/%m/%Y %H:%M:%S", tm_info);
-  lista_extrato[numExtratos].valor = valor;
-  lista_extrato[numExtratos].tarifa = 0.0;
-  lista_extrato[numExtratos].saldo = cliente->saldo;
-  numExtratos++;
-
-  arquivo_clientes();
-  arquivo_extrato();
-  printf("O valor foi depositado com sucesso\n");
-}
-
-void extrato() {
+void extrato(struct Cliente *clientes, int numClientes, struct Extrato *extratos, int numExtratos) {
   char cpf[12];
   char senha[20];
   printf("Digite seu CPF: ");
@@ -235,29 +244,31 @@ void extrato() {
   printf("Digite sua senha: ");
   scanf("%s", senha);
 
-  struct Cliente *cliente = buscar_cliente(cpf);
+  struct Cliente *cliente = buscar_cliente(cpf, clientes, numClientes);
   if (cliente == NULL || strcmp(senha, cliente->senha) != 0) {
     printf("CPF ou senha incorretos\n");
     return;
   }
 
   for (int i = 0; i < numExtratos; i++) {
-    if (strcmp(cpf, lista_extrato[i].cpf) == 0) {
+    if (strcmp(cpf, extratos[i].cpf) == 0) {
       printf("Data: %s, Valor: %.2lf, Tarifa: %.2lf, Saldo: %.2lf\n",
-             lista_extrato[i].data, lista_extrato[i].valor,
-             lista_extrato[i].tarifa, lista_extrato[i].saldo);
+             extratos[i].data, extratos[i].valor,
+             extratos[i].tarifa, extratos[i].saldo);
     }
   }
 }
 
-void transferencia() {
+
+
+void transferencia(struct Cliente *clientes, int numClientes, struct Extrato *extratos, int *numExtratos) {
   char cpf[12];
   char senha[20];
   char cpf_dest[12];
   printf("Digite seu CPF: ");
   scanf("%s", cpf);
 
-  struct Cliente *cliente = buscar_cliente(cpf);
+  struct Cliente *cliente = buscar_cliente(cpf, clientes, numClientes);
   if (cliente == NULL) {
     printf("CPF não encontrado\n");
     return;
@@ -269,7 +280,7 @@ void transferencia() {
   printf("Digite o CPF do destinatário: ");
   scanf("%s", cpf_dest);
 
-  struct Cliente *cliente_dest = buscar_cliente(cpf_dest);
+  struct Cliente *cliente_dest = buscar_cliente(cpf_dest, clientes, numClientes);
   if (cliente_dest == NULL) {
     printf("Destinatário não encontrado\n");
     return;
@@ -290,22 +301,22 @@ void transferencia() {
     return;
   }
 
-  strcpy(lista_extrato[numExtratos].cpf, cpf);
+  strcpy(extratos[*numExtratos].cpf, cpf);
   time_t now = time(NULL);
   struct tm *tm_info = localtime(&now);
-  strftime(lista_extrato[numExtratos].data, 20, "%d/%m/%Y %H:%M:%S", tm_info);
-  lista_extrato[numExtratos].valor = -valor;
-  lista_extrato[numExtratos].tarifa = 0.0;
-  lista_extrato[numExtratos].saldo = cliente->saldo;
-  numExtratos++;
+  strftime(extratos[*numExtratos].data, 20, "%d/%m/%Y %H:%M:%S", tm_info);
+  extratos[*numExtratos].valor = -valor;
+  extratos[*numExtratos].tarifa = 0.0;
+  extratos[*numExtratos].saldo = cliente->saldo;
+  (*numExtratos)++;
 
-  strcpy(lista_extrato[numExtratos].cpf, cpf_dest);
-  lista_extrato[numExtratos].valor = valor;
-  lista_extrato[numExtratos].tarifa = 0.0;
-  lista_extrato[numExtratos].saldo = cliente_dest->saldo;
-  numExtratos++;
+  strcpy(extratos[*numExtratos].cpf, cpf_dest);
+  extratos[*numExtratos].valor = valor;
+  extratos[*numExtratos].tarifa = 0.0;
+  extratos[*numExtratos].saldo = cliente_dest->saldo;
+  (*numExtratos)++;
 
-  arquivo_clientes();
-  arquivo_extrato();
+  arquivo_clientes(clientes, numClientes);
+  arquivo_extrato(extratos, *numExtratos);
   printf("Ação bem sucedida\n");
 }

@@ -20,17 +20,18 @@ struct Extrato {
   double saldo;
 };
 
-void arquivo_clientes();
-void arquivo_extrato();
-void ler_arquivo_clientes();
-void ler_arquivo_extrato();
-struct Cliente *buscar_cliente(const char *cpf);
-void novo_cliente();
-void apagar_cliente();
-void listar_clientes();
-void debito();
-void deposito();
-void extrato();
-void transferencia();
+void arquivo_clientes(struct Cliente *clientesbanco, int numClientes);
+void arquivo_extrato(struct Extrato *lista_extrato, int numExtratos);
+void ler_arquivo_clientes(struct Cliente *clientesbanco, int *numClientes);
+void ler_arquivo_extrato(struct Extrato *lista_extrato, int *numExtratos);
+struct Cliente *buscar_cliente(const char *cpf, struct Cliente *clientesbanco, int numClientes);
+struct Cliente *buscar_senha(const char *senha, struct Cliente *clientesbanco, int numClientes);
+void novo_cliente(struct Cliente *clientesbanco, int *numClientes, struct Extrato *lista_extrato, int *numExtratos);
+void apagar_cliente(struct Cliente *clientesbanco, int *numClientes);
+void listar_clientes(struct Cliente *clientesbanco, int numClientes);
+void debito(struct Cliente *clientesbanco, int numClientes, struct Extrato *lista_extrato, int *numExtratos);
+void deposito(struct Cliente *clientesbanco, int numClientes, struct Extrato *lista_extrato, int *numExtratos);
+void extrato(struct Cliente *clientesbanco, int numClientes, struct Extrato *lista_extrato, int numExtratos);
+void transferencia(struct Cliente *clientesbanco, int numClientes, struct Extrato *lista_extrato, int *numExtratos);
 
 #endif // CLIENTE_BANCO_H

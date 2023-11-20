@@ -1,9 +1,14 @@
 #include "cliente_banco.h"
 #include <stdio.h>
 
+struct Cliente clientesbanco[100];
+struct Extrato lista_extrato[100];
+int numClientes = 0;
+int numExtratos = 0;
+
 int main() {
-  ler_arquivo_clientes();
-  ler_arquivo_extrato();
+  ler_arquivo_clientes(clientesbanco, &numClientes);
+  ler_arquivo_extrato(lista_extrato, &numExtratos);
 
   int opcao;
   while (1) {
@@ -15,29 +20,29 @@ int main() {
 
     switch (opcao) {
     case 1:
-      novo_cliente();
+      novo_cliente(clientesbanco, &numClientes, lista_extrato, &numExtratos);
       break;
     case 2:
-      apagar_cliente();
+      apagar_cliente(clientesbanco, &numClientes);
       break;
     case 3:
-      listar_clientes();
+      listar_clientes(clientesbanco, numClientes);
       break;
     case 4:
-      debito();
+      debito(clientesbanco, numClientes, lista_extrato, &numExtratos);
       break;
     case 5:
-      deposito();
+      deposito(clientesbanco, numClientes, lista_extrato, &numExtratos);
       break;
     case 6:
-      extrato();
+      extrato(clientesbanco, numClientes, lista_extrato, numExtratos);
       break;
     case 7:
-      transferencia();
+      transferencia(clientesbanco, numClientes, lista_extrato, &numExtratos);
       break;
     case 8:
-      arquivo_clientes();
-      arquivo_extrato();
+      arquivo_clientes(clientesbanco, numClientes);
+      arquivo_extrato(lista_extrato, numExtratos);
       printf("\nAção encerrada\n\n");
       return 0;
     default:
